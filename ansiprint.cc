@@ -107,10 +107,37 @@ static int first_file = 0;
 
 
 /**********************************************************************
+ * usage
+ *
+ * Prints the correct syntax for the program to stderr.  (Should it
+ * instead go to stdout?)
+ *
+ * PARAMETERS
+ * 	[none]
+ *
+ * RETURNS
+ * 	[none]
+ *********************************************************************/
+ usage()
+ {
+ 	cerr
+ 	<< "USAGE:  ansiprint [-d] [-t] [-b<buffersize>] [file1] [file2] ...\n"
+ 	<< "	-d  Write an EOF (cntrl-D) after each file (for form-feeding)\n"
+ 	<< "	-t  Write output to /dev/tty instead of stdout\n"
+ 	<< "	-b<buffersize>  Set the read/write buffer to <buffersize>\n";
+ }
+
+
+
+/**********************************************************************
  * process_cmd_line
  *
  * Looks at the command line options, if there are any, and sets the
  * global option variables appropriately.
+ *
+ * I suspect there is already a standard library function that would do
+ * this better, but damned if I know what it is.  If you do, and you
+ * know the correct way to use it, please do let me know
  *
  * PARAMETERS
  *	argc -- number of cmd line arguments
@@ -185,11 +212,6 @@ int do_buffer(void)
 	return (read_size);
 }
 		
-
-/*************************************************************************
-N.B. one can make a function just like above, but instead of cout
-using write to /dev/tty.
-**************************************************************************/
 
 
 
