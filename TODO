@@ -11,3 +11,6 @@
 	
 *	Include an option to print the filename, date, user, etc. at the
 	top of the file.. possible use of some other utility for this??
+
+*	Add a '-m' flag to enable printing from Macintosh terminals
+	(presumably this means a CR must be printed along with every LF.)
