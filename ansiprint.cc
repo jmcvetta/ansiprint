@@ -103,6 +103,14 @@ static int bufsize = DEF_BUFSIZE;
  */
 static int first_file = 0;
 
+/*
+ * separate_files -- print a cntrl-D (EOF) between each file specified
+ * on the cmd line.
+ *
+ * 0 = do NOT separate
+ * 1 = DO separate
+ */
+int static separate_files = 1;
 
 
 
@@ -125,14 +133,21 @@ void usage(void)
  {
  	cerr
  	<< "\n"
- 	<< "USAGE:  ansiprint [-d] [-t] [-b<buffersize>] [file1] [file2] ...\n"
- 	<< "	-d  Write an EOF (cntrl-D) after each file (for form-feeding)\n"
- 	<< "	-t  Write output to /dev/tty instead of stdout\n"
- 	<< "	-b<buffersize>  Set the read/write buffer to <buffersize>\n"
+ 	<< "USAGE:  ansiprint [-d] [-t] [-S] [-b<buffersize>] [-f file1 file2 ...]\n"
  	<< "\n"
- 	<< "N.B. If file(s) are specified on the command line, stdin is ignored.\n"
+   	<< "\t -d  Write an EOF (cntrl-D) after the last file (for form-feeding)\n"
+	<< "\t -S  Do NOT write an EOF between each separate file specified on the command line\n"
+  	<< "\t -t  Write output to /dev/tty instead of stdout\n"
+ 	<< "\t -b<buffersize>  Set the read/write buffer to <buffersize>.  (default = 512 bytes)\n"
  	<< "\n"
- 	<< "File input not yet supported!\n"
+	<< "DEFAULT BEHAVIOR:\n"
+	<< "Unless '-f' is specified, files on the command line are ignored and stdin is\n"
+	<< "printed.  If '-f' is specified, stdin is ignored.  When multiple files are\n"
+	<< "given, an EOF is printed after each file except the last, unless '-S' is\n"
+	<< "specified.  If '-S' is specified, the files are seperated by only a newline\n"
+	<< "character.  Independent of this, the user may elect to include an EOF after all\n"
+	<< "input has been printed, using '-d'.  Ansiprint does not recognize if multiple files\n"
+	<< "are piped to stdin, and will do nothing special for them.\n"
  	<< "\n";
  	exit(-1);
  }
@@ -175,10 +190,13 @@ void process_cmd_line (int argc, char *argv[])
 	 * values.  Since, if '-f' is not specified, any files named on the 
 	 * cmd line will be ignored.
 	 */
-	while ((x = getopt(argc, argv, "dtfb:")) != -1)
+	while ((x = getopt(argc, argv, "Sdtfb:")) != -1)
 	{
 		switch(x)
 		{
+			case 'S':
+				separate_files = 0;
+				break;
 			case 'd':
 				cntrl_d = 1;
 				break;
@@ -236,8 +254,10 @@ int do_buffer(void)
 {
 	char buffer[bufsize];
 
-	/* used to capture the size of the read; if the buffer is full,
-	 * will be the same as bufsize (or else bufsize-1??) */
+	/* 
+	 * used to capture the size of the read; if the buffer is full,
+	 * will be the same as bufsize (or else bufsize-1??)
+	 */
 	int read_size;
 	
 	read_size = read(input_file, buffer, bufsize);
@@ -274,9 +294,27 @@ int do_buffer(void)
 		
 		// Prints the file
 		while (do_buffer() > 0);
-		
+
+#ifndef NOPRINT
+		/*
+		 * Unless the user has specifically requested that files not be
+		 * separated by an EOF, we will insert one after each file
+		 * EXCEPT the last file -- the last file will still be handled
+		 * according to the cntrl_d setting.
+		 */
+		if ((separate_files == 1) && (counter < argc - 1))
+			write(output_file,"\004",1);  // EOF
+		elif (counter < argc - 1)
+			write(output_file,"\012",1);  // Newline
+#endif //NOPRINT
+				
 		close(input_file);
 	}
+#ifndef NOPRINT
+	// Prints an EOF after the LAST file
+	if (cntrl_d)
+		write(output_file,"\004",1);
+#endif //NOPRINT
 	
 	// The number of files printed
 	return (counter - first_file);
@@ -291,28 +329,23 @@ int main(int argc, char *argv[])
 	// Take a look at the command line
 	process_cmd_line(argc, argv);
 
+#ifndef NOPRINT
+	// Beginning ANSI print code
+	write(output_file,"\033[5i",4);
+#endif //NOPRINT
+
+
+	/*
+	 * Since first_file == 0, that means there are no files
+	 * specified on the command line.  So we will take input from
+	 * stdin.  (input_file = 0 by default)
+	 */
 	if (first_file > 0)
-		/***** Not yet implimented *****/
-		// cerr << "File input not yet implimented.\n";
 		process_files(argc, argv);
 	else
 	{
-		/*
-		 * ***** The print codes should be moved to encompas the entire
-		 * if/else statement once file-input is supported. *****
-		 */
-#ifndef NOPRINT
-		write(output_file,"\033[5i",4);
-#endif //NOPRINT
-		
-		/*
-		 * Since first_file == 0, that means there are no files
-		 * specified on the command line.  So we will take input from
-		 * stdin.  (input_file = 0 by default)
-		 */
 		while (do_buffer() > 0);
-		
-		/*
+				/*
 		 * unlike the initial and closing print codes, the cntrl-d code
 		 * should not be moved outside of the buffer section.  This is
 		 * because, if cntrl-d is specified for files on the command
@@ -322,9 +355,13 @@ int main(int argc, char *argv[])
 #ifndef NOPRINT
 		if (cntrl_d)
 			write(output_file,"\004",1);
-		// see first note regarding print codes
-		write(output_file,"\033[4i",4);
 #endif //NOPRINT
-	
 	}	
+
+	// Closing ANSI print code.
+#ifndef NOPRINT
+	write(output_file,"\033[4i",4);
+#endif //NOPRINT
+
+
 }
