@@ -38,8 +38,8 @@
 
 // Supresses the escape sequences
 #define NOPRINT
-// duh
-#undef DEBUG
+
+#define DEBUG
 
 // INCLUDES
 #include <iostream.h>
@@ -148,9 +148,6 @@ void usage(void)
  * Looks at the command line options, if there are any, and sets the
  * global option variables appropriately.
  *
- * I suspect there is already a standard library function that would do
- * this better, but damned if I know what it is.  If you do, and you
- * know the correct way to use it, please do let me know
  *
  * PARAMETERS
  *	argc -- number of cmd line arguments
@@ -167,34 +164,64 @@ void process_cmd_line (int argc, char *argv[])
 	 * only options, only files, or both, on the line.
 	 */
 	
-	while ((argc > 1) && (argv[1][0] == '-'))
+	extern char *optarg;
+	extern int optind;
+	
+	// The output of getopt
+	int x;
+	
+	x = getopt(argc, argv, "dtfb:");
+	
+	if (x != -1)
 	{
-		switch(argv[1][1])
+		// Unless '-f' is specified as an option, use_files = 0
+		int use_files = 0;
+		while (optind < argc)
 		{
-			// -d insert an EOF file at end
-			case 'd':
-				cntrl_d = 1;
-				break;
-			case 't':
-				output_file=open("/dev/tty",O_WRONLY);
-				break;
-			case 'b':
-				bufsize = atoi(&argv[1][2]);
-				break;
-			// Fall through: must be a syntax error
-			default:
-				usage();
+			cout << "argc == " << argc << "\n";
+			cout << "optind == " << optind << "\n";
+			cout << "x == " << x << "\n";
+			switch(x)
+			{
+				case 'd':
+					cntrl_d = 1;
+					break;
+				case 't':
+					output_file=open("/dev/tty",O_WRONLY);
+					break;
+				case 'f':
+					use_files = 1;
+#ifdef DEBUG
+					cout << "use_files == 1\n";
+#endif //DEBUG
+
+
+				case 'b':
+					bufsize = atoi(optarg);
+					break;
+				// Fall through: must be a syntax error
+				default:
+					usage();
+			}
+			x = getopt(argc, argv, "dtfb:");
 		}
-	++argv;
-	--argc;
+		
+		// The next argument should be the first file
+		if (use_files == 1)
+			/*
+			 * The first file will be the first cmd line argument that
+			 * is not an option (i.e. does not begin with a '-'.
+			 */
+			first_file = optind + 1;
+			return;
 	}
-
-	/*
-	 * Now we need to insert some code here to set first_file to
-	 * something appropriate; but I'm too tired to do that
-	 */
-
+	// No cmd line arguments, so return
+	else
+		// Since first_file = 0, we need not return any value
+		return;
 }
+
+
 
 
 /**********************************************************************
@@ -242,7 +269,10 @@ int main(int argc, char *argv[])
 {
 	// Take a look at the command line
 	process_cmd_line(argc, argv);
-	
+
+	cout << "first file == " << first_file << "\n";
+	exit;
+		
 	if (first_file > 0)
 		/***** Not yet implimented *****/
 		cerr << "File input not yet implimented.\n";
