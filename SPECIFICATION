@@ -1,6 +1,6 @@
 Ansiprint
 
-Nov. 21, 2000 Jason R. McVetta
+December 30, 2000 Jason R. McVetta
 
 Allows stdin or files specified on the command line to be printed from a
 remote terminal using ANSI escape sequences. 
@@ -11,4 +11,8 @@ contrib/utils folder of the pine distribution).
 +++++ Addition on Dec 12, 2000: +++
 
 Prevent binary files from being printed.  (Perhaps include a cmd line
-option to allow them explicitly.)
+option to allow them explicitly.)  [not done; don't know quite how to do
+this]
+
+Will print from stdin unless printing files from cmd line is explicitly
+specified.
