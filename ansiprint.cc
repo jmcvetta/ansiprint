@@ -181,6 +181,12 @@ void process_cmd_line (int argc, char *argv[])
 	++argv;
 	--argc;
 	}
+
+	/*
+	 * Now we need to insert some code here to set first_file to
+	 * something appropriate; but I'm too tired to do that
+	 */
+
 }
 
 
