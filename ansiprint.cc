@@ -303,7 +303,7 @@ int do_buffer(void)
 		 * according to the cntrl_d setting.
 		 */
 		if ((separate_files == 1) && (counter < argc - 1))
-			write(output_file,"\004",1);  // EOF
+			write(output_file, "\004" ,1);  // EOF
 		else
 		{
 			if (counter < argc - 1)
@@ -316,7 +316,7 @@ int do_buffer(void)
 #ifndef NOPRINT
 	// Prints an EOF after the LAST file
 	if (cntrl_d)
-		write(output_file,"\004",1);
+		write(output_file, "\004" ,1);
 #endif //NOPRINT
 	
 	// The number of files printed
@@ -357,7 +357,7 @@ int main(int argc, char *argv[])
 		 */
 #ifndef NOPRINT
 		if (cntrl_d)
-			write(output_file,"\004",1);
+			write(output_file, "\004" ,1);
 #endif //NOPRINT
 	}	
 
