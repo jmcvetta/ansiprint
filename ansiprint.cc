@@ -4,18 +4,12 @@
  * Takes test from either stdin or specified file(s) and outputs it
  * wrapped in ANSI escape sequences, to allow printing from a terminal. 
  *
- * Files specified on the command line will take precedence over stdin.
+ * By default takes input from stdin.  Only if '-f' is specified are
+ * files read from the command line (and stdin ignored).
  *
- * I also plan to add a choice of printing to stdout or to /dev/tty;
- * pine's implimentation does only /dev/tty, but that seems messy and
- * only of occassional use.
+ * Output may be sent either to stdout (default) or to /dev/tty (in case
+ * something is trapping stdout).
  *
- * To begin with I will impliment only the stdin part, since that is
- * slightly easier, then add the file support later.  Also, I will add
- * support for the option of a cntrl-D at the end of the output (I don't
- * know why, but pine's has one, so mine will too).  (The cntrl-D is
- * probably for printing a form-feed at the end.)
- * 
  * A respected friend says there is too much commenting in this program.
  * I'm not so sure I agree -- I like a lot of comments.  He says it's
  * insulting to the intelligence of other programmers who might modify
@@ -30,13 +24,15 @@
  *
  * For latest updates, see the CVS tree on ansiprint's Sourceforge
  * project site at:  sourceforge.net/projects/ansiprint
+ * 
+ * Or see the ansiprint home page at ansiprint.sourceforge.net
  *
  **********************************************************************/
 
 
 /***** PREPROCESSOR STUFF *****/
 
-// Supresses the escape sequences
+// Supresses the escape sequences if defined.
 #undef NOPRINT
 
 // INCLUDES
@@ -135,21 +131,27 @@ void usage(void)
  	<< "\n"
  	<< "USAGE:  ansiprint [-n] [-t] [-S] [-b<buffersize>] [-f file1 file2 ...]\n"
  	<< "\n"
-   	<< "\t -n  Write an NP after the last file (for form-feeding)\n"
-	<< "\t -S  Do NOT write an NP between each separate file specified on the\n"
+   	<< "\t -n  Print a form-feed character after everything else.\n"
+	<< "\t -S  Do NOT print a form-feed between each separate file specified on the\n"
 	<< "\t     command line\n"
-  	<< "\t -t  Write output to /dev/tty instead of stdout\n"
+  	<< "\t -t  Write output to /dev/tty instead of stdout (in case something is\n"
+	<< "\t     trapping stdout)\n"
  	<< "\t -b<buffersize>  Set the read/write buffer to <buffersize>.\n"
 	<< "\t                 (default = 512 bytes)\n"
  	<< "\n"
 	<< "DEFAULT BEHAVIOR:\n"
 	<< "Unless '-f' is specified, files on the command line are ignored and stdin is\n"
-	<< "printed.  If '-f' is specified, stdin is ignored.  When multiple files are\n"
-	<< "given, an new page character is printed after each file except the last, unless '-S' is\n"
-	<< "specified.  If '-S' is specified, the files are seperated by only a newline\n"
-	<< "character.  Independent of this, the user may elect to include an NP after all\n"
-	<< "input has been printed, using '-n'.  Ansiprint does not recognize multiple\n"
-	<< "files piped to stdin, and will do nothing special for them.\n"
+	<< "printed.  If '-f' is specified, stdin is ignored and the specified files printed.\n"
+	<< "\n"
+	<< "When multiple files are specified on the command line, a form-feed is printed after\n"
+	<< "each file except the last.  This may be turned off with '-S'; then files will only be\n"
+	<< "separated by a line feed.\n"
+	<< "\n"
+	<< "A form-feed is NOT printed after the last file, unless '-f' is specified.  (This is\n"
+	<< "probably only useful for some tractor-fed printers.)\n"
+	<< "\n"
+	<< "Ansiprint does not recognize multiple files piped to stdin, and will print them as one\n"
+	<< "big lump.\n"
  	<< "\n";
  	exit(-1);
  }
@@ -180,6 +182,8 @@ void process_cmd_line (int argc, char *argv[])
 	
 	extern char *optarg;
 	extern int optind;
+	extern int opterr;
+	opterr = 0;
 	
 	// A throwaway for the while() below.
 	int x;
