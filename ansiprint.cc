@@ -74,12 +74,12 @@ static int input_file = 0;
 static int output_file = 1;
 
 /*
- * cntrl_d -- write and EOF character at the end of the file; used to
+ * np -- write and NP character at the end of the file; used to
  * generate a form-feed at the end when that is desirable.
- *	0 = do NOT write an EOF
- *	1 = DO write an EOF
+ *	0 = do NOT write an NP
+ *	1 = DO write an NP
  */
-static int cntrl_d = 0;
+static int np = 0;
 
 /*
  * bufsize -- the actual size of (read) buffer that will be
@@ -94,7 +94,7 @@ static int bufsize = DEF_BUFSIZE;
  *
  * For example, with a command line that looks like this:
  *
- *		ansiprint -B512 -D foo.txt bar.txt
+ *		ansiprint -b 512 -d foo.txt bar.txt
  *
  * first_file would be 3
  *
@@ -104,7 +104,7 @@ static int bufsize = DEF_BUFSIZE;
 static int first_file = 0;
 
 /*
- * separate_files -- print a cntrl-D (EOF) between each file specified
+ * separate_files -- print an NP between each file specified
  * on the cmd line.
  *
  * 0 = do NOT separate
@@ -133,20 +133,22 @@ void usage(void)
  {
  	cerr
  	<< "\n"
- 	<< "USAGE:  ansiprint [-d] [-t] [-S] [-b<buffersize>] [-f file1 file2 ...]\n"
+ 	<< "USAGE:  ansiprint [-n] [-t] [-S] [-b<buffersize>] [-f file1 file2 ...]\n"
  	<< "\n"
-   	<< "\t -d  Write an EOF (cntrl-D) after the last file (for form-feeding)\n"
-	<< "\t -S  Do NOT write an EOF between each separate file specified on the command line\n"
+   	<< "\t -n  Write an NP after the last file (for form-feeding)\n"
+	<< "\t -S  Do NOT write an NP between each separate file specified on the\n"
+	<< "\t     command line\n"
   	<< "\t -t  Write output to /dev/tty instead of stdout\n"
- 	<< "\t -b<buffersize>  Set the read/write buffer to <buffersize>.  (default = 512 bytes)\n"
+ 	<< "\t -b<buffersize>  Set the read/write buffer to <buffersize>.\n"
+	<< "\t                 (default = 512 bytes)\n"
  	<< "\n"
 	<< "DEFAULT BEHAVIOR:\n"
 	<< "Unless '-f' is specified, files on the command line are ignored and stdin is\n"
 	<< "printed.  If '-f' is specified, stdin is ignored.  When multiple files are\n"
-	<< "given, an EOF is printed after each file except the last, unless '-S' is\n"
+	<< "given, an new page character is printed after each file except the last, unless '-S' is\n"
 	<< "specified.  If '-S' is specified, the files are seperated by only a newline\n"
-	<< "character.  Independent of this, the user may elect to include an EOF after all\n"
-	<< "input has been printed, using '-d'.  Ansiprint does not recognize multiple\n"
+	<< "character.  Independent of this, the user may elect to include an NP after all\n"
+	<< "input has been printed, using '-n'.  Ansiprint does not recognize multiple\n"
 	<< "files piped to stdin, and will do nothing special for them.\n"
  	<< "\n";
  	exit(-1);
@@ -190,15 +192,15 @@ void process_cmd_line (int argc, char *argv[])
 	 * values.  Since, if '-f' is not specified, any files named on the 
 	 * cmd line will be ignored.
 	 */
-	while ((x = getopt(argc, argv, "Sdtfb:")) != -1)
+	while ((x = getopt(argc, argv, "Sntfb:")) != -1)
 	{
 		switch(x)
 		{
 			case 'S':
 				separate_files = 0;
 				break;
-			case 'd':
-				cntrl_d = 1;
+			case 'n':
+				np = 1;
 				break;
 			case 't':
 				output_file=open("/dev/tty",O_WRONLY);
@@ -298,12 +300,12 @@ int do_buffer(void)
 #ifndef NOPRINT
 		/*
 		 * Unless the user has specifically requested that files not be
-		 * separated by an EOF, we will insert one after each file
+		 * separated by an NP, we will insert one after each file
 		 * EXCEPT the last file -- the last file will still be handled
-		 * according to the cntrl_d setting.
+		 * according to the np setting.
 		 */
 		if ((separate_files == 1) && (counter < argc - 1))
-			write(output_file, "\004" ,1);  // EOF
+			write(output_file, "\014" ,1);  // NP (newpage)
 		else
 		{
 			if (counter < argc - 1)
@@ -314,9 +316,9 @@ int do_buffer(void)
 		close(input_file);
 	}
 #ifndef NOPRINT
-	// Prints an EOF after the LAST file
-	if (cntrl_d)
-		write(output_file, "\004" ,1);
+	// Prints an NP after the LAST file
+	if (np)
+		write(output_file, "\014" ,1);
 #endif //NOPRINT
 	
 	// The number of files printed
@@ -356,8 +358,8 @@ int main(int argc, char *argv[])
 		 * causes a form-feed).
 		 */
 #ifndef NOPRINT
-		if (cntrl_d)
-			write(output_file, "\004" ,1);
+		if (np)
+			write(output_file, "\014" ,1);
 #endif //NOPRINT
 	}	
 
