@@ -43,6 +43,7 @@
 // INCLUDES
 #include <iostream.h>
 #include <string.h> // Check to be sure we need this
+#include <stdlib.h>
 // below are the includes for raw I/O
 #include <fcntl.h>
 #include <unistd.h>
@@ -135,9 +136,9 @@ void process_cmd_line (int argc, char *argv[])
 				break;
 			case 't':
 				output_file=open("/dev/tty",O_WRONLY);
-#ifdef DEBUG				
-				cout << "\n\n" << output_file << "\n";
-#endif //DEBUG				
+				break;
+			case 'b':
+				bufsize = atoi(&argv[1][2]);
 				break;
 			// more!!!!
 		}
