@@ -9,7 +9,7 @@ install:
 	cp ansiprint /usr/local/bin
 
 clean: 
-	rm -f ansiprint
+	rm -f test ansiprint
 
 uninstall:
 	rm /usr/local/bin/ansiprint

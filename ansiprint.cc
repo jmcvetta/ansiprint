@@ -28,7 +28,8 @@
  *
  * Begun: Nov. 21, 2000
  *
- * Last updated: Dec. 1, 2000
+ * For latest updates, see the CVS tree on ansiprint's Sourceforge
+ * project site at:  sourceforge.net/projects/ansiprint
  *
  **********************************************************************/
 
@@ -106,6 +107,11 @@ static int first_file = 0;
 
 
 
+
+/***** FUNCTIONS *****/
+
+
+
 /**********************************************************************
  * usage
  *
@@ -157,7 +163,8 @@ void process_cmd_line (int argc, char *argv[])
 {
 	/*
 	 * This function is only called if there are arguments on the
-	 * command line, so we will start out assuming that first_file = 1
+	 * command line.  However, it may be the case either that there are
+	 * only options, only files, or both, on the line.
 	 */
 	
 	while ((argc > 1) && (argv[1][0] == '-'))
