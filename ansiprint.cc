@@ -108,6 +108,13 @@ static int first_file = 0;
  */
 int static separate_files = 1;
 
+/*
+ * mac -- convert LF's to LF/CR's for printing from Macintosh terminals
+ * 
+ * 0 = LF
+ * 1 = LF/CR
+ */
+int static mac = 0;
 
 
 /***** FUNCTIONS *****/
@@ -277,6 +284,80 @@ int do_buffer(void)
 	return (read_size);
 }
 		
+/**********************************************************************
+ * do_mac_buffer
+ * 
+ * Gets a buffer up to half as large as bufsize.  Searches through that
+ * buffer for any LF characters.  When an LF is found, it a CR is added
+ * immediately after it.  Output is doen the same as in do_buffer().
+ *
+ * The buffer read is only half as big as bufsize so that, even in the event
+ * every single character read in is a LF, the output will not exceed
+ * bufsize.
+ * 
+ * WARNING:  It seems possible that there could be buffer overflows in this
+ * section.  I do not understand strcat() (or strincat()) well enough to know
+ * for sure this code is safe.
+ *
+ * PARAMETERS
+ *	all of do_buffers parameters are static variables
+ *
+ * RETURNS
+ *	size of buffer read (which is useful principally to see if it read
+ *		anything at all
+ **********************************************************************/
+int do_mac_buffer(void)
+{
+	char inbuf[bufsize / 2];
+	/*
+	 * Once a chunk of data with an LF at the end has had a CR appended to
+	 * it, it is sent to workbuf.  It will be necessary to keep track of
+	 * how much has been added onto inbuf, since we will not want to write
+	 * all of workbuf unless it has actually been filled up.  (The
+	 * unfilled space in workbuf may have crap in it.
+	 */
+	char outbuf[bufsize];
+	/*
+	 * The workbuf may need to be bigger than the outbuf; I do not understand
+	 * the strsep() operation well enough to know for sure what effect on size
+	 * the various Null's will have.  It may well be possible that this should
+	 * only be set to size bufsize.
+	 */
+	char *workbuf[bufsize * 2];	 
+	char **ap, *inputstring;
+	inputstring = &inbuf[0];
+	/* 
+	 * used to capture the size of the read; if the buffer is full,
+	 * will be the same as bufsize (or else bufsize-1??)
+	 */
+	int read_size;
+	// Get a bufferful of input
+	read_size = read(input_file, inbuf, (bufsize / 2));
+
+	// Test to see if there's anything in this buffer we've just read
+	if ( read_size > 0 ) 
+	{
+		// Seperate the string at each occurrence of LF
+		for (ap = workbuf; (*ap = strsep(&inputstring, " \012")) != NULL;)
+			if (**ap != '\0')
+			++ap;
+		int counter; // Counts the number of elements in the workbuf
+		/*
+		 * The conditional is workbuf[counter + 1] because we don't want to
+		 * tack an extra CR/LF onto the end of the last segment.
+		 */
+		for (counter = 0; workbuf[counter + 1]; ++counter)
+		{
+			// The current workbuf element, without a LR or CR
+			strlcat(outbuf, workbuf[counter], sizeof(workbuf[counter]));
+			// Append a LF and CR
+			strlcat(outbuf, "\012\015", 2);
+			
+
+		write(output_file, outbuf, read_size);
+	}
+	return (read_size);
+}
 
 
 /*************************************************************
@@ -352,8 +433,14 @@ int main(int argc, char *argv[])
 		process_files(argc, argv);
 	else
 	{
-		while (do_buffer() > 0);
-				/*
+		switch(mac)
+		{
+			case 0:
+				while (do_buffer() > 0);
+			case 1:
+				while (do_mac_buffer() > 0);
+		}
+		/*
 		 * unlike the initial and closing print codes, the cntrl-d code
 		 * should not be moved outside of the buffer section.  This is
 		 * because, if cntrl-d is specified for files on the command
