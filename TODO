@@ -1,6 +1,13 @@
 *	Fix writing to /dev/tty [DONE]
-*	Fix processing command line options
-*	Read data from file(s)
+
+*	Fix processing command line options [DONE]
+
+*	Read data from file(s) [DONE]
+
 *	Check to see if file is binary before printing
+
 *	Make sure the commenting of the program, right at the beginning, 
-	clearly details what the cmd line options are, &c.
+	clearly details what the cmd line options are, &c. [PARTIAL]
+	
+*	Include an option to print the filename, date, user, etc. at the
+	top of the file.. possible use of some other utility for this??
