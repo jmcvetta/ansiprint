@@ -4,9 +4,8 @@
 GENERAL NOTE
 
 This is a partially-functional beta release.  Right now, ansiprint will
-accept input only from stdin, and write only to stdout.  No other
-command line arguments work either.  However, as far as I know, what
-does work, works well.
+accept input only from stdin.  The buffersize and cntrl-D command line
+should also work.  However, as far as I know, what does work, works well.
 
 
 INSTALLATION
@@ -26,4 +25,4 @@ If you have problems, suggestions, etc., you can reach me at:
 
 
 
-[ file last updated Dec. 05, 2000, 1:19am ]
+[ file last updated Dec. 12, 2000, 9:02am ]
