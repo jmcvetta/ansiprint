@@ -118,13 +118,20 @@ static int first_file = 0;
  * RETURNS
  * 	[none]
  *********************************************************************/
- usage()
+void usage(void)
  {
  	cerr
+ 	<< "\n"
  	<< "USAGE:  ansiprint [-d] [-t] [-b<buffersize>] [file1] [file2] ...\n"
  	<< "	-d  Write an EOF (cntrl-D) after each file (for form-feeding)\n"
  	<< "	-t  Write output to /dev/tty instead of stdout\n"
- 	<< "	-b<buffersize>  Set the read/write buffer to <buffersize>\n";
+ 	<< "	-b<buffersize>  Set the read/write buffer to <buffersize>\n"
+ 	<< "\n"
+ 	<< "N.B. If file(s) are specified on the command line, stdin is ignored.\n"
+ 	<< "\n"
+ 	<< "File input not yet supported!\n"
+ 	<< "\n";
+ 	exit(-1);
  }
 
 
@@ -167,7 +174,9 @@ void process_cmd_line (int argc, char *argv[])
 			case 'b':
 				bufsize = atoi(&argv[1][2]);
 				break;
-			// more!!!!
+			// Fall through: must be a syntax error
+			default:
+				usage();
 		}
 	++argv;
 	--argc;
