@@ -146,8 +146,8 @@ void usage(void)
 	<< "given, an EOF is printed after each file except the last, unless '-S' is\n"
 	<< "specified.  If '-S' is specified, the files are seperated by only a newline\n"
 	<< "character.  Independent of this, the user may elect to include an EOF after all\n"
-	<< "input has been printed, using '-d'.  Ansiprint does not recognize if multiple files\n"
-	<< "are piped to stdin, and will do nothing special for them.\n"
+	<< "input has been printed, using '-d'.  Ansiprint does not recognize multiple\n"
+	<< "files piped to stdin, and will do nothing special for them.\n"
  	<< "\n";
  	exit(-1);
  }
