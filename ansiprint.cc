@@ -37,7 +37,7 @@
 /***** PREPROCESSOR STUFF *****/
 
 // Supresses the escape sequences
-#define NOPRINT
+#undef NOPRINT
 
 // INCLUDES
 #include <iostream.h>
@@ -304,8 +304,11 @@ int do_buffer(void)
 		 */
 		if ((separate_files == 1) && (counter < argc - 1))
 			write(output_file,"\004",1);  // EOF
-		elif (counter < argc - 1)
-			write(output_file,"\012",1);  // Newline
+		else
+		{
+			if (counter < argc - 1)
+				write(output_file,"\012",1);  // Newline
+		}
 #endif //NOPRINT
 				
 		close(input_file);
