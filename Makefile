@@ -1,5 +1,5 @@
 CC=g++
-CGLAGS=-Wall -O2 -mpentium
+CGLAGS=-Wall -O2
 all: ansiprint
 
 ansiprint: ansiprint.cc
