@@ -1,0 +1,17 @@
+find out if there are command-line arguments
+if yes:
+	find out if any of them are filenames
+	if yes:
+		set input_type to file
+		record how many files there are, and what their names are
+	if not:
+		set input_type to stdin
+	record such appropriate option values as the others (which will be flags) indicate
+if no:
+	set input_type to stdin
+look at input type:
+if stdin:
+	process stdin for printing
+if file:
+	print each file (seperated by cntrl-D's unless specified otherwise)
+

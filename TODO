@@ -1,0 +1,5 @@
+*	Fix writing to /dev/tty [DONE]
+*	Fix processing command line options
+*	Read data from file(s)
+*	Check to see if file is binary before printing
+

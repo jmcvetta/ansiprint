@@ -1,0 +1,9 @@
+Ansiprint
+
+Nov. 21, 2000 Jason R. McVetta
+
+Allows stdin or files specified on the command line to be printed from a
+remote terminal using ANSI escape sequences. 
+
+Inspired by the ansiprt.c component of U Wash's PINE (located in the
+contrib/utils folder of the pine distribution).

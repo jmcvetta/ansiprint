@@ -1,0 +1,29 @@
+                                  ANSIPRINT 0.2.0
+
+
+GENERAL NOTE
+
+This is a partially-functional beta release.  Right now, ansiprint will
+accept input only from stdin, and write only to stdout.  No other
+command line arguments work either.  However, as far as I know, what
+does work, works well.
+
+
+INSTALLATION
+
+This is a very, very simple program, and should compile on any unix box,
+and possibly on other stuff too.  You can install it in the usual way:
+
+	$ make
+	$ make install
+
+
+CONTACT INFORMATION
+
+If you have problems, suggestions, etc., you can reach me at:
+
+	mcvetta.3@osu.edu
+
+
+
+[ file last updated Dec. 05, 2000, 1:19am ]
