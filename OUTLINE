@@ -1,3 +1,8 @@
+N.B.	The code doesn't look much like this anymore; but I'm not sure
+		with such a small project it's at all worth while updating this.
+
+
+
 find out if there are command-line arguments
 if yes:
 	find out if any of them are filenames
