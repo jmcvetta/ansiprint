@@ -167,49 +167,50 @@ void process_cmd_line (int argc, char *argv[])
 	extern char *optarg;
 	extern int optind;
 	
-	// The output of getopt
+	// A throwaway for the while() below.
 	int x;
 	
-	x = getopt(argc, argv, "dtfb:");
-	cout << x << endl;
+	// Stays == 0 unless '-f' is specified
+	int use_files = 0;
 	
-	while (x != -1)
+	/*
+	 * If there are no options, process_cmd_line need not return any
+	 * values.  Since, if '-f' is not specified, any files named on the 
+	 * cmd line will be ignored.
+	 */
+	while ((x = getopt(argc, argv, "dtfb:")) != -1)
 	{
-		// Unless '-f' is specified as an option, use_files = 0
-		int use_files = 0;
-		while (optind < argc - 1)
+		switch(x)
 		{
-			cout << "argc == " << argc << "\n";
-			cout << "optind == " << optind << "\n";
-			cout << "x == " << x << "\n";
-			switch(x)
-			{
-				case 'd':
-					cntrl_d = 1;
-					break;
-				case 't':
-					output_file=open("/dev/tty",O_WRONLY);
-					break;
-				case 'f':
-					use_files = 1;
-					break;
-				case 'b':
-					bufsize = atoi(optarg);
-					break;
-				// Fall through: must be a syntax error
-				default:
-					usage();
-			}
-			x = getopt(argc, argv, "dtfb:");
+			case 'd':
+				cntrl_d = 1;
+				break;
+			case 't':
+				output_file=open("/dev/tty",O_WRONLY);
+				break;
+			case 'f':
+				use_files = 1;
+				break;
+			case 'b':
+				bufsize = atoi(optarg);
+				break;
+			case '?':
+				usage();
+				break;
+			// Fall through: must be a syntax error
+			default:
+				usage();
+				break;
 		}
-		// The next argument should be the first file
-		if (use_files == 1)
-			/*
-			 * The first file will be the first cmd line argument that
-			 * is not an option (i.e. does not begin with a '-'.
-			 */
-			first_file = optind + 1;
 	}
+	
+	// The next argument should be the first file
+	if (use_files == 1)
+		/*
+		 * The first file will be the first cmd line argument that
+		 * is not an option (i.e. does not begin with a '-'.
+		 */
+		first_file = optind + 1;
 	return;
 }
 
@@ -262,8 +263,6 @@ int main(int argc, char *argv[])
 	// Take a look at the command line
 	process_cmd_line(argc, argv);
 
-	cout << "first file == " << first_file << "\n";
-		
 	if (first_file > 0)
 		/***** Not yet implimented *****/
 		cerr << "File input not yet implimented.\n";
