@@ -171,12 +171,13 @@ void process_cmd_line (int argc, char *argv[])
 	int x;
 	
 	x = getopt(argc, argv, "dtfb:");
+	cout << x << endl;
 	
-	if (x != -1)
+	while (x != -1)
 	{
 		// Unless '-f' is specified as an option, use_files = 0
 		int use_files = 0;
-		while (optind < argc)
+		while (optind < argc - 1)
 		{
 			cout << "argc == " << argc << "\n";
 			cout << "optind == " << optind << "\n";
@@ -191,11 +192,7 @@ void process_cmd_line (int argc, char *argv[])
 					break;
 				case 'f':
 					use_files = 1;
-#ifdef DEBUG
-					cout << "use_files == 1\n";
-#endif //DEBUG
-
-
+					break;
 				case 'b':
 					bufsize = atoi(optarg);
 					break;
@@ -205,7 +202,6 @@ void process_cmd_line (int argc, char *argv[])
 			}
 			x = getopt(argc, argv, "dtfb:");
 		}
-		
 		// The next argument should be the first file
 		if (use_files == 1)
 			/*
@@ -213,12 +209,8 @@ void process_cmd_line (int argc, char *argv[])
 			 * is not an option (i.e. does not begin with a '-'.
 			 */
 			first_file = optind + 1;
-			return;
 	}
-	// No cmd line arguments, so return
-	else
-		// Since first_file = 0, we need not return any value
-		return;
+	return;
 }
 
 
@@ -271,7 +263,6 @@ int main(int argc, char *argv[])
 	process_cmd_line(argc, argv);
 
 	cout << "first file == " << first_file << "\n";
-	exit;
 		
 	if (first_file > 0)
 		/***** Not yet implimented *****/
