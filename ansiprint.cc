@@ -54,7 +54,7 @@
 
 /*
  * Size of buffer that will be used if user does not specify otherwise
- * on the command line.
+ * on the command line.  *** Is this a good size??? ***
  */
 const int DEF_BUFSIZE = 512;
 
@@ -62,15 +62,9 @@ const int DEF_BUFSIZE = 512;
 // COMMAND LINE OPTIONS
 
 /*
- * input_type -- where the input we plan to print is coming from
- *	1 = stdin
- *	2 = command line
- *
- * *** N.B. It may be possible to do away with this variable entirely,
- * since the first_file variable (probably) makes input_type
- * redundant. 
+ * input_file -- the file being input
  */	
-static int input_type = 1; 
+static int input_file = 0; 
 
 /*
  * output_file -- file descriptor to send output to
@@ -88,11 +82,11 @@ static int output_file = 1;
 static int cntrl_d = 0;
 
 /*
- * chosen_bufsize -- the actual size of (read) buffer that will be
+ * bufsize -- the actual size of (read) buffer that will be
  * used.  Defaults to DEF_BUFSIZE, but can be specified on the
  * command line. 
  */
-static int chosen_bufsize = DEF_BUFSIZE;
+static int bufsize = DEF_BUFSIZE;
 
 /*
  * first_file -- gives the number of the first argument that is a
@@ -162,15 +156,13 @@ void process_cmd_line (int argc, char *argv[])
  * Returns the number of characters read (and thus printed).
  *
  * PARAMETERS
- *	input_file -- the file-descriptor to read (0 is stdin)
- *	output_file -- the file-descriptor to write to (1 is stdout)
- *	bufsize buffer size to use
+ *	all of do_buffers parameters are static variables
  *
  * RETURNS
  *	size of buffer read (which is useful principally to see if it read
  *		anything at all
  **********************************************************************/
-int do_buffer(int input_file, int output_file, int bufsize)
+int do_buffer(void)
 {
 	char buffer[bufsize];
 
@@ -210,11 +202,35 @@ int main(int argc, char *argv[])
 		/***** Not yet implimented *****/
 		cerr << "File input not yet implimented.\n";
 	else
+	{
+		/*
+		 * ***** The print codes should be moved to encompas the entire
+		 * if/else statement once file-input is supported. *****
+		 */
+#ifndef NOPRINT
+		write(output_file,"\033[5i",4);
+#endif //NOPRINT
+		
 		/*
 		 * Since first_file == 0, that means there are no files
 		 * specified on the command line.  So we will take input from
-		 * stdin.
+		 * stdin.  (input_file = 0 by default)
 		 */
-		while (do_buffer(0, output_file, chosen_bufsize) > 0);
-
+		while (do_buffer() > 0);
+		
+		/*
+		 * unlike the initial and closing print codes, the cntrl-d code
+		 * should not be moved outside of the buffer section.  This is
+		 * because, if cntrl-d is specified for files on the command
+		 * line, we will want to print one after each file (since it
+		 * causes a form-feed).
+		 */
+#ifndef NOPRINT
+		if (cntrl_d)
+			write(output_file,"\004",1);
+		// see first note regarding print codes
+		write(output_file,"\033[4i",4);
+#endif //NOPRINT
+	
+	}	
 }
