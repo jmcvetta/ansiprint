@@ -2,4 +2,5 @@
 *	Fix processing command line options
 *	Read data from file(s)
 *	Check to see if file is binary before printing
-
+*	Make sure the commenting of the program, right at the beginning, 
+	clearly details what the cmd line options are, &c.
