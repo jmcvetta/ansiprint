@@ -1,3 +1,28 @@
+find out if there are command line arguments
+	if no:
+		do stdin to cout
+	if yes:
+		parse them and set appropriate vars
+if use_files is set:
+	then files will begin with the first argument on the command line
+	that does not begin with a dash
+else:
+	print from stdin to whatever other (if any) opts indicate
+			
+
+
+
+
+
+
+
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 N.B.	The code doesn't look much like this anymore; but I'm not sure
 		with such a small project it's at all worth while updating this.
 
