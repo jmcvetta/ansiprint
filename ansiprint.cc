@@ -127,31 +127,30 @@ int static separate_files = 1;
  *********************************************************************/
 void usage(void)
  {
- 	cerr
+ 	cout
  	<< "\n"
  	<< "USAGE:  ansiprint [-n] [-t] [-S] [-b<buffersize>] [-f file1 file2 ...]\n"
- 	<< "\n"
    	<< "\t -n  Print a form-feed character after everything else.\n"
-	<< "\t -S  Do NOT print a form-feed between each separate file specified on the\n"
-	<< "\t     command line\n"
+	<< "\t -S  Do NOT print a form-feed between each separate file specified on\n"
+	<< "\t     the command line\n"
   	<< "\t -t  Write output to /dev/tty instead of stdout (in case something is\n"
 	<< "\t     trapping stdout)\n"
  	<< "\t -b<buffersize>  Set the read/write buffer to <buffersize>.\n"
 	<< "\t                 (default = 512 bytes)\n"
- 	<< "\n"
+	<< "\n"
 	<< "DEFAULT BEHAVIOR:\n"
 	<< "Unless '-f' is specified, files on the command line are ignored and stdin is\n"
-	<< "printed.  If '-f' is specified, stdin is ignored and the specified files printed.\n"
+	<< "printed.  If '-f' is specified, stdin is ignored and the listed files printed.\n"
 	<< "\n"
-	<< "When multiple files are specified on the command line, a form-feed is printed after\n"
-	<< "each file except the last.  This may be turned off with '-S'; then files will only be\n"
-	<< "separated by a line feed.\n"
+	<< "When multiple files are specified on the command line, a form-feed is printed\n" 
+	<< "after each file except the last.  This may be turned off with '-S'; then files\n"
+	<< "will only be separated by a line feed.\n"
 	<< "\n"
-	<< "A form-feed is NOT printed after the last file, unless '-f' is specified.  (This is\n"
-	<< "probably only useful for some tractor-fed printers.)\n"
+	<< "A form-feed is NOT printed after the last file, unless '-f' is specified.  (This\n"
+	<< "is probably only useful for some tractor-fed printers.)\n"
 	<< "\n"
-	<< "Ansiprint does not recognize multiple files piped to stdin, and will print them as one\n"
-	<< "big lump.\n"
+	<< "Ansiprint does not recognize multiple files piped to stdin, and will print them\n"
+	<< "as one big lump.\n"
  	<< "\n";
  	exit(-1);
  }
