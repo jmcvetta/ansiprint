@@ -14,3 +14,9 @@
 
 *	Add a '-m' flag to enable printing from Macintosh terminals
 	(presumably this means a CR must be printed along with every LF.)
+	(The ASCII decimal for CR is 015.)  Probably the thing to do is to
+	read only half a bufsize worth of input, since that way even if the
+	entire input consists of LF's (and a CR must be added to each one),
+	the output still will not surpass bufsize. (i presume the reason one
+	might want to use bufsize would be limitations of their terminal 
+	device, not the UNIX host system.)
