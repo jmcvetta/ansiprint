@@ -39,8 +39,6 @@
 // Supresses the escape sequences
 #define NOPRINT
 
-#define DEBUG
-
 // INCLUDES
 #include <iostream.h>
 #include <string.h> // Check to be sure we need this
@@ -113,10 +111,9 @@ static int first_file = 0;
 
 
 /**********************************************************************
- * usage
+ * usage -- print correct syntax
  *
- * Prints the correct syntax for the program to stderr.  (Should it
- * instead go to stdout?)
+ * (Printed to stderr; should it instead go to stdout?)
  *
  * PARAMETERS
  * 	[none]
@@ -208,12 +205,15 @@ void process_cmd_line (int argc, char *argv[])
 	if (use_files == 1)
 		/*
 		 * The first file will be the first cmd line argument that
-		 * is not an option (i.e. does not begin with a '-'.
+		 * is not an option (i.e. does not begin with a '-'.  After all
+		 * option have been processed, optind is 1 higher than the
+		 * position of the last option.  argv[] starts at zero, whereas
+		 * optind starts at 1.  So the final optind value will be the
+		 * same as the argv[] position of the first file.
 		 */
-		first_file = optind + 1;
+		first_file = optind;
 	return;
 }
-
 
 
 
@@ -246,15 +246,43 @@ int do_buffer(void)
 	 * there is, print it to stdout. */
 	if ( read_size > 0 ) 
 	{
-#ifndef DEBUG
 		write(output_file, buffer, read_size);
-#endif //DEBUG
 	}
 	
 	return (read_size);
 }
 		
 
+
+/*************************************************************
+ * process_files -- print files(s) specified on command line
+ *
+ * PARAMETERS
+ *  argc, argv (usual meanings); also uses first_file, which is 
+ *  a static var.
+ *
+ * RETURNS
+ *  number of files printed (is this necessary/useful?)
+ ************************************************************/
+ int process_files(int argc, char *argv[])
+ {
+	int counter; // Current file we are using
+	
+	for (counter = first_file; counter < argc; ++counter)
+	{
+		input_file = open(argv[counter], O_RDONLY);
+		
+		// Prints the file
+		while (do_buffer() > 0);
+		
+		close(input_file);
+	}
+	
+	// The number of files printed
+	return (counter - first_file);
+		
+	 	
+ }
 
 
 
@@ -265,7 +293,8 @@ int main(int argc, char *argv[])
 
 	if (first_file > 0)
 		/***** Not yet implimented *****/
-		cerr << "File input not yet implimented.\n";
+		// cerr << "File input not yet implimented.\n";
+		process_files(argc, argv);
 	else
 	{
 		/*
