@@ -7,3 +7,8 @@ remote terminal using ANSI escape sequences.
 
 Inspired by the ansiprt.c component of U Wash's PINE (located in the
 contrib/utils folder of the pine distribution).
+
++++++ Addition on Dec 12, 2000: +++
+
+Prevent binary files from being printed.  (Perhaps include a cmd line
+option to allow them explicitly.)
